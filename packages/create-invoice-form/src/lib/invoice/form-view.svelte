@@ -173,7 +173,7 @@
     </p>
     <p class="invoice-section-title">
       <span>Invoice Type</span>
-      Regular Invoice
+      {formData.invoiceFinancing ? "Transferable Invoice" : "Regular Invoice"}
     </p>
     <div class="invoice-table-wrapper">
       <table class="invoice-table">

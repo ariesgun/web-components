@@ -5,7 +5,7 @@
   export let label = "";
   export let type: HTMLInputTypeAttribute = "text";
   export let placeholder = "";
-  export let value: string | number = "";
+  export let value: string | number | boolean = "";
   export let className = "";
   export let handleInput: ((e: Event) => void) | undefined = undefined;
   export let onBlur: ((e: Event) => void) | undefined = undefined;
@@ -16,6 +16,29 @@
   export let width = "";
 </script>
 
+{#if type === "checkbox"}
+<div class="input-checkbox-wrapper">
+  {#if label}
+    <label for={id} class="input-label">{label}</label>
+  {/if}
+  <div class={`input-container ${width}`}>
+    <div class={`${$$slots.icon ? "text-input-icon" : ""}`}>
+      <slot name="icon" />
+    </div>
+    <input
+      {id}
+      {min}
+      {style}
+      {value}
+      {disabled}
+      {...{ type }}
+      {placeholder}
+      on:blur={onBlur}
+      on:input={handleInput}
+    />
+  </div>
+</div>
+{:else}
 <div class="input-wrapper">
   {#if label}
     <label for={id} class="input-label">{label}</label>
@@ -35,6 +58,18 @@
         on:input={handleInput}
         class={`textarea-input ${className}`}
       />
+    {:else if type === "checkbox"}
+      <input
+        {id}
+        {min}
+        {style}
+        {value}
+        {disabled}
+        {...{ type }}
+        {placeholder}
+        on:blur={onBlur}
+        on:input={handleInput}
+      />
     {:else}
       <input
         {id}
@@ -51,6 +86,7 @@
     {/if}
   </div>
 </div>
+{/if}
 
 <style>
   .input-wrapper input,
@@ -66,6 +102,10 @@
     box-sizing: border-box;
   }
 
+  .input-wrapper input[type=checkbox] {
+    appearance: auto;
+  }
+
   .input-wrapper input:disabled,
   .input-wrapper textarea:disabled {
     background-color: #fafafa;
@@ -77,6 +117,14 @@
     max-width: 100%;
     gap: 8px;
   }
+
+  .input-checkbox-wrapper {
+    display: flex;
+    flex-direction: row;
+    max-width: 100%;
+    gap: 8px;
+  }
+
 
   .input-wrapper .input-label {
     font-size: 14px;

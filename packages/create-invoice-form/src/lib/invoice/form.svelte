@@ -75,8 +75,9 @@
 
   const handleInput = (event: Event, itemIndex?: number) => {
     const target = event.target as HTMLInputElement;
-    const { id, value } = target;
+    const { id, value, checked } = target;
     const fieldName = id.split("-")[0];
+
 
     if (typeof itemIndex === "number") {
       if (fieldName === "tax") {
@@ -87,7 +88,11 @@
       (formData.items[itemIndex] as any)[fieldName] = value;
     } else {
       if (id in formData) {
-        (formData as any)[id] = value;
+        if (id === "invoiceFinancing") {
+          (formData as any)[id] = checked;  
+        } else {
+          (formData as any)[id] = value;
+        }
       }
     }
   };
@@ -335,6 +340,12 @@
         {#if payeeAddressError}
           <p class="error-address">Please enter a valid Ethereum address</p>
         {/if}
+        <Input
+            label="Invoice Financing"
+            id="invoiceFinancing"
+            type="checkbox"
+            {handleInput}
+        />
       </div>
     </div>
     <div class="invoice-form-dates">

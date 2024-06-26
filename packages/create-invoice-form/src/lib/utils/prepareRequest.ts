@@ -19,7 +19,7 @@ export const prepareRequestParams = ({
   currency,
   formData,
   currencies,
-  invoiceTotals,
+  invoiceTotals
 }: IRequestParams): Types.ICreateRequestParameters => ({
   requestInfo: {
     currency: {
@@ -41,7 +41,15 @@ export const prepareRequestParams = ({
     },
     timestamp: Utils.getCurrentTimestampInSecond(),
   },
-  paymentNetwork: {
+  paymentNetwork: formData.invoiceFinancing ? {
+    id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_TRANSFERABLE_RECEIVABLE,
+    parameters: {
+      paymentNetworkName: currencies.get(currency)!.network,
+      paymentAddress: formData.payeeAddress,
+      feeAddress: zeroAddress,
+      feeAmount: "0",
+    },
+  }: {
     id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
     parameters: {
       paymentNetworkName: currencies.get(currency)!.network,

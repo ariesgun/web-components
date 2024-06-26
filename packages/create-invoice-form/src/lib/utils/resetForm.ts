@@ -52,5 +52,6 @@ export function getInitialFormData() {
       taxRegistration: "",
       email: "",
     },
+    invoiceFinancing: false
   };
 }

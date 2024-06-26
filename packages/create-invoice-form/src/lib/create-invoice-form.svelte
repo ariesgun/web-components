@@ -73,6 +73,8 @@
     totalAmount: 0,
   };
 
+  let invoiceFinancing = formData.invoiceFinancing;
+
   $: {
     formData.creatorId = signer;
     invoiceTotals = calculateInvoiceTotals(formData.items);
@@ -131,7 +133,7 @@
       formData,
       currency,
       currencies,
-      invoiceTotals,
+      invoiceTotals
     });
 
     if (requestNetwork) {
