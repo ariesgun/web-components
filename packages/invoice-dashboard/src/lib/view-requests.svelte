@@ -207,7 +207,7 @@
       case true:
         return "Paid";
       default:
-        return "Created";
+        return request?.state;
     }
   };
 </script>
@@ -362,6 +362,17 @@
                   </i>
                 </div>
               </th>
+              <th on:click={() => handleSort("network")}>
+                <div>
+                  Payment Network<i class={`caret `}>
+                    {#if sortOrder === "asc" && sortColumn === "network"}
+                      <ChevronUp />
+                    {:else}
+                      <ChevronDown />
+                    {/if}
+                  </i>
+                </div>
+              </th>
               <th on:click={() => handleSort("state")}>
                 <div>
                   Status<i class={`caret `}>
@@ -447,6 +458,9 @@
                       request.currencyInfo.network ?? "",
                       request.currencyInfo.value
                     )}
+                  </td>
+                  <td>
+                    {request.currencyInfo.network}
                   </td>
                   <td> {checkStatus(request)}</td>
                 </tr>

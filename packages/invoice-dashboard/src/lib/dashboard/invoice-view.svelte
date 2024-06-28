@@ -7,6 +7,9 @@
     payRequest,
     approveErc20,
     hasErc20Approval,
+    mintErc20TransferableReceivable,
+    hasReceivableForRequest,
+    payErc20TransferableReceivableRequest,
   } from "@requestnetwork/payment-processor";
   import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
   import {
@@ -25,6 +28,7 @@
     getDecimals,
   } from "$src/utils";
   import { formatUnits } from "viem";
+    import { BigNumber } from "ethers";
 
   export let config;
   export let wallet: WalletState | undefined;
@@ -39,6 +43,8 @@
 
   let statuses: any = [];
   let isPaid = false;
+  let isMinted = false;
+  let isTransferable = false;
   let loading = false;
   let requestData: any = null;
   let signer: any = null;
@@ -49,6 +55,9 @@
   let sellerInfo: { label: string; value: string }[] = [];
   let buyerInfo: { label: string; value: string }[] = [];
   let isPayee = request?.payee?.value.toLowerCase() === address?.toLowerCase();
+  let isAccepted = false;
+  let isCreated = false;
+  let isCancelled = false;
   let unsupportedNetwork = false;
   let correctChain =
     wallet?.chains[0].id === String(getNetworkIdFromNetworkName(network));
@@ -122,9 +131,19 @@
       requestData = singleRequest?.getData();
       approved = await checkApproval(requestData, signer);
       isPaid = requestData?.balance?.balance! >= requestData?.expectedAmount;
+      isTransferable = (getPaymentNetworkExtension(requestData!)?.id === Types.Extension.PAYMENT_NETWORK_ID.ERC20_TRANSFERABLE_RECEIVABLE)
+      isMinted = await hasReceivableForRequest(requestData, signer);
+      isAccepted = requestData?.state === Types.RequestLogic.STATE.ACCEPTED;
+      isCreated = requestData?.state === Types.RequestLogic.STATE.CREATED;
+      isCancelled = requestData?.state === Types.RequestLogic.STATE.CANCELED;
       loading = false;
+      console.log("Transferable: ", isTransferable);
+      console.log("Accepted: ", isAccepted);
+      console.log("Minted: ", isMinted);
+      console.log("Approved: ", approved);
     } catch (err: any) {
       loading = false;
+      console.log("Error:", err);
       if (String(err).includes("Unsupported payment")) {
         unsupportedNetwork = true;
         return;
@@ -140,8 +159,13 @@
       );
 
       statuses = [...statuses, "Waiting for payment"];
-      const paymentTx = await payRequest(requestData, signer);
-      await paymentTx.wait(2);
+      if (!isTransferable) {
+        const paymentTx = await payRequest(requestData, signer);
+        await paymentTx.wait(2);
+      } else {
+        const paymentTx = await payErc20TransferableReceivableRequest(requestData, signer);
+        await paymentTx.wait(2);
+      }
 
       statuses = [...statuses, "Payment detected"];
       while (requestData.balance?.balance! < requestData.expectedAmount) {
@@ -160,6 +184,59 @@
     }
   };
 
+  const acceptRequest = async () => {
+    try {
+      loading = true;
+      const _request = await requestNetwork?.fromRequestId(
+        requestData?.requestId!
+      );
+
+      statuses = [...statuses, "Waiting for accept"];
+      await _request?.accept({
+        type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+        value: address!,
+      });
+
+      statuses = [...statuses, "Request is accepted"];
+      isAccepted = true;
+      isCreated = false;
+      loading = false;
+      statuses = [];
+    } catch (err) {
+      console.error("Something went wrong while accepting : ", err);
+      loading = false;
+      statuses = [];
+    }
+  };
+
+  const mintTheRequest = async () => {
+    try {
+      loading = true;
+      const _request = await requestNetwork?.fromRequestId(
+        requestData?.requestId!
+      );
+
+      statuses = [...statuses, "Minting..."];
+      const paymentTx = await mintErc20TransferableReceivable(
+        requestData,
+        signer, 
+        {
+          gasLimit: BigNumber.from("20000000"),
+        }
+      );
+      await paymentTx.wait(2);
+
+      statuses = [...statuses, "Request minted!"];
+      isMinted = true;
+      loading = false;
+      statuses = [];
+    } catch (err) {
+      console.error("Something went wrong while paying : ", err);
+      loading = false;
+      statuses = [];
+    }
+  };
+
   const checkApproval = async (requestData: any, signer: any) => {
     return await hasErc20Approval(requestData!, address!, signer);
   };
@@ -169,8 +246,10 @@
       loading = true;
 
       if (
-        getPaymentNetworkExtension(requestData!)?.id ===
-        Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT
+        (getPaymentNetworkExtension(requestData!)?.id ===
+          Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT) || 
+        (getPaymentNetworkExtension(requestData!)?.id ===
+        Types.Extension.PAYMENT_NETWORK_ID.ERC20_TRANSFERABLE_RECEIVABLE)
       ) {
         const approvalTx = await approveErc20(requestData!, signer);
         await approvalTx.wait(2);
@@ -216,6 +295,18 @@
       ? `${integerPart}.${decimalPart.substring(0, maxDecimalDigits)}`
       : value;
   }
+
+  function stateToString(value: Types.RequestLogic.STATE | undefined): string {
+    if (value === Types.RequestLogic.STATE.ACCEPTED) {
+      return "Accepted";
+    } else if (value === Types.RequestLogic.STATE.CREATED) {
+      return "Created";
+    } else if (value === Types.RequestLogic.STATE.CANCELED) {
+      return "Cancelled";
+    } else {
+      return "Pending";
+    }
+  }
 </script>
 
 <div
@@ -231,7 +322,7 @@
   <h2 class="invoice-number">
     Invoice #{request?.contentData?.invoiceNumber}
     <p class={`invoice-status ${isPaid ? "bg-green" : "bg-zinc"}`}>
-      {isPaid ? "Paid" : "Created"}
+      {isPaid ? "Paid" : stateToString(request?.state) }
     </p>
   </h2>
   <div class="invoice-address">
@@ -274,6 +365,10 @@
       request?.currencyInfo.network ?? "",
       request?.currencyInfo.value ?? ""
     )}
+  </h3>
+  <h3 class="invoice-info-payment">
+    <span style="font-weight: 500;">Payment Network:</span>
+      {request?.extensionsData[0].id}
   </h3>
 
   {#if request?.contentData?.invoiceItems}
@@ -399,27 +494,47 @@
     <div class="invoice-view-actions">
       {#if loading}
         <div class="loading">Loading...</div>
-      {:else if !correctChain && !isPayee}
+      {:else if !correctChain}
         <Button
           type="button"
           text="Switch Network"
           padding="px-[12px] py-[6px]"
           onClick={() => switchNetworkIfNeeded(network)}
         />
-      {:else if !approved && !isPaid && !isPayee && !unsupportedNetwork}
-        <Button
-          type="button"
-          text="Approve"
-          padding="px-[12px] py-[6px]"
-          onClick={approve}
-        />
-      {:else if approved && !isPaid && !isPayee && !unsupportedNetwork}
-        <Button
-          type="button"
-          text="Pay"
-          padding="px-[12px] py-[6px]"
-          onClick={payTheRequest}
-        />
+      {:else if !isPayee}
+        {#if !approved && !isPaid && !isCancelled && !unsupportedNetwork}
+          <Button
+            type="button"
+            text="Approve"
+            padding="px-[12px] py-[6px]"
+            onClick={approve}
+          />
+        {:else if approved && !isPaid && !isCancelled && !unsupportedNetwork && (isTransferable && isMinted || !isTransferable)}
+          <Button
+            type="button"
+            text="Pay"
+            padding="px-[12px] py-[6px]"
+            onClick={payTheRequest}
+          />
+        {/if}
+        <!-- Workflow Accept -->
+        {#if isCreated && !isAccepted}
+          <Button
+            type="button"
+            text="Accept"
+            padding="px-[12px] py-[6px]"
+            onClick={acceptRequest}
+          />
+        {/if}
+      {:else if isPayee}
+        {#if !isPaid && isTransferable && !isMinted && !unsupportedNetwork}
+          <Button
+            type="button"
+            text="Mint Invoice for Financing"
+            padding="px-[12px] py-[6px]"
+            onClick={mintTheRequest}
+          />
+        {/if}
       {/if}
     </div>
   </div>
