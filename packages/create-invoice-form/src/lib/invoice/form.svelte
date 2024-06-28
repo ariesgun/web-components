@@ -12,7 +12,7 @@
     Trash,
     Plus,
     checkAddress,
-  } from "@requestnetwork/shared";
+  } from "@ariesgun/shared";
 
   export let config: IConfig;
   export const invoiceNumber: number = 1;

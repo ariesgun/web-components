@@ -7,9 +7,9 @@
     calculateInvoiceTotals,
     config as defaultConfig,
     type IConfig,
-  } from "@requestnetwork/shared";
+  } from "@ariesgun/shared";
   import { InvoiceForm, InvoiceView } from "./invoice";
-  import { Modal, Button, Status } from "@requestnetwork/shared";
+  import { Modal, Button, Status } from "@ariesgun/shared";
   import { getInitialFormData, prepareRequestParams } from "$utils";
   import type { RequestNetwork } from "@requestnetwork/request-client.js";
 

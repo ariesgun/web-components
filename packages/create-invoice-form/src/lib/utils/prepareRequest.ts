@@ -1,5 +1,5 @@
 import { Types, Utils } from "@requestnetwork/request-client.js";
-import type { CustomFormData } from "@requestnetwork/shared";
+import type { CustomFormData } from "@ariesgun/shared";
 import { parseUnits, zeroAddress } from "viem";
 
 interface IRequestParams {

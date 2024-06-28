@@ -16,7 +16,7 @@ Usage depends on the component. See packages/\<package>/README.md
 | [@requestnetwork/add-stakeholder](packages/add-stakeholder/README.md)  | [![npm version](https://badge.fury.io/js/%40requestnetwork%2Fadd-stakeholder.svg)](https://badge.fury.io/js/%40requestnetwork%2Fadd-stakeholder) |
 | [@requestnetwork/create-invoice-form](packages/create-invoice-form/README.md) | [![npm version](https://badge.fury.io/js/%40requestnetwork%2Fcreate-invoice-form.svg)](https://badge.fury.io/js/%40requestnetwork%2Fcreate-invoice-form) |
 | [@requestnetwork/invoice-dashboard](packages/invoice-dashboard/README.md) | [![npm version](https://badge.fury.io/js/%40requestnetwork%2Finvoice-dashboard.svg)](https://badge.fury.io/js/%40requestnetwork%2Finvoice-dashboard) |
-| [@requestnetwork/shared](packages/shared/README.md) | [![npm version](https://badge.fury.io/js/%40requestnetwork%2Fshared.svg)](https://badge.fury.io/js/%40requestnetwork%2Fshared) |
+| [@ariesgun/shared](packages/shared/README.md) | [![npm version](https://badge.fury.io/js/%40requestnetwork%2Fshared.svg)](https://badge.fury.io/js/%40requestnetwork%2Fshared) |
 
 
 ## Developing

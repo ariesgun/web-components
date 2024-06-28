@@ -16,7 +16,7 @@
     ChevronRight,
     type IConfig,
     config as defaultConfig,
-  } from "@requestnetwork/shared";
+  } from "@ariesgun/shared";
   import { onMount } from "svelte";
   import { formatUnits } from "viem";
   import { Drawer, InvoiceView } from "./dashboard";

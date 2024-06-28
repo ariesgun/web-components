@@ -8,7 +8,7 @@
     type IConfig,
     type CustomFormData,
     config as defaultConfig,
-  } from "@requestnetwork/shared";
+  } from "@ariesgun/shared";
 
   export let currencies;
   export let config: IConfig;

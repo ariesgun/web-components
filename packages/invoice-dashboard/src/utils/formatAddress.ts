@@ -1,4 +1,4 @@
-import { checkAddress } from "@requestnetwork/shared";
+import { checkAddress } from "@ariesgun/shared";
 
 export const formatAddress = (
 	address: string,

@@ -19,7 +19,7 @@
     formatDate,
     calculateItemTotal,
     getCurrenciesByNetwork,
-  } from "@requestnetwork/shared";
+  } from "@ariesgun/shared";
   import type { WalletState } from "@web3-onboard/core";
   import {
     walletClientToSigner,

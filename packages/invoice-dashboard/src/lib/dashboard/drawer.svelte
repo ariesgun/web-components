@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Close } from "@requestnetwork/shared";
+  import { Close } from "@ariesgun/shared";
 
   export let active = false;
   export let onClose: () => void;

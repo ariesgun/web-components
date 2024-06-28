@@ -112,7 +112,7 @@ Use the config object to pass additional configuration options to the invoice da
 Please replace the `builderId` with your own, arbitrarily chosen ID. This is used to track how many invoices are created by your application.
 
 ```ts
-import { IConfig } from "@requestnetwork/shared";
+import { IConfig } from "@ariesgun/shared";
 
 export const config: IConfig = {
   builderId: "request-network", // Replace with your builder ID, arbitrarily chosen, used for metrics

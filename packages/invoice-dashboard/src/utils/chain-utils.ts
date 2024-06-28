@@ -1,4 +1,4 @@
-import { getCurrenciesByNetwork } from "@requestnetwork/shared";
+import { getCurrenciesByNetwork } from "@ariesgun/shared";
 
 export const getSymbol = (network: string, value: string) => {
   const currenciesMap = getCurrenciesByNetwork(network);

@@ -12,10 +12,9 @@ jobs:
     strategy:
       matrix:
         package:
-          - "@requestnetwork/add-stakeholder"
-          - "@requestnetwork/create-invoice-form"
-          - "@requestnetwork/invoice-dashboard"
-          - "@requestnetwork/shared"
+          - "@ariesgun/create-invoice-form"
+          - "@ariesgun/invoice-dashboard"
+          - "@ariesgun/shared"
     steps:
     - name: Checkout repository 🛎️
       uses: actions/checkout@v4

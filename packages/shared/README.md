@@ -11,7 +11,7 @@ This package provides shared svelte components and utils used by other web compo
 To install the component, use npm:
 
 ```bash
-npm install @requestnetwork/shared
+npm install @ariesgun/shared
 ```
 
 ## Additional Information
