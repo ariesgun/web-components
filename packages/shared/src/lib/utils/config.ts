@@ -1,5 +1,5 @@
 import logo from "../assets/logo-sm.svg";
-import { IConfig } from "../types";
+import type { IConfig } from "../types";
 
 export const config: IConfig = {
   builderId: "your-project-name",

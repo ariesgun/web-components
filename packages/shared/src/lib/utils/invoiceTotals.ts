@@ -1,4 +1,4 @@
-import { InvoiceItem } from "../types";
+import type { InvoiceItem } from "../types";
 
 export const calculateInvoiceTotals = (data: InvoiceItem[]) => {
   let amountWithoutTax = 0;
