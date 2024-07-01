@@ -34,6 +34,17 @@
       chainId: "11155111",
     },
   ];
+  let paymentNetworks = [
+    {
+      name: "ERC20 Transferable Receivable",
+      value: "pn-erc20-transferable-receivable"
+
+    },
+    {
+      name: "ERC20 Fee Proxy Contract",
+      value: "pn-erc20-fee-proxy-contract"
+    }
+  ]
 
   let network = networks[0];
   const handleNetworkChange = (chainId: string) => {
@@ -51,6 +62,14 @@
       currency = newCurrencies.keys().next().value;
     }
   };
+
+  const handlePaymentNetworkChange = (value: string) => {
+    console.log("hhelo", value)
+    formData.invoiceFinancing = (value === "pn-erc20-transferable-receivable")
+
+    console.log("Hey", formData.invoiceFinancing)
+
+  }
 
   let canSubmit = false;
   let appStatus: APP_STATUS[] = [];
@@ -169,7 +188,9 @@
       bind:clientAddressError
       {handleCurrencyChange}
       {handleNetworkChange}
+      {handlePaymentNetworkChange}
       {networks}
+      {paymentNetworks}
     />
     <div class="invoice-view-wrapper">
       <InvoiceView

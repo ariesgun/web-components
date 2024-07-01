@@ -17,11 +17,12 @@
   export let config: IConfig;
   export const invoiceNumber: number = 1;
   export let formData: CustomFormData;
-  export let handleCurrencyChange: (value: string) => void;
-
+  export let handleCurrencyChange: (value: string) => void; 
   export let handleNetworkChange: (chainId: string) => void;
+  export let handlePaymentNetworkChange: (value: string) => void;
   export let networks;
   export let currencies = new Map();
+  export let paymentNetworks;
   export let payeeAddressError = false;
   export let clientAddressError = false;
 
@@ -328,6 +329,17 @@
           }))}
           onchange={handleCurrencyChange}
         />
+        <Dropdown
+        {config}
+          placeholder="Select a payment network"
+          options={paymentNetworks.map((pn) => {
+            return {
+              value: pn.value,
+              label: pn.name,
+            };
+          })}
+        onchange={handlePaymentNetworkChange}
+        />
         <Input
           label="Where do you want to receive your payment?"
           id="payeeAddress"
@@ -340,12 +352,6 @@
         {#if payeeAddressError}
           <p class="error-address">Please enter a valid Ethereum address</p>
         {/if}
-        <Input
-            label="Invoice Financing"
-            id="invoiceFinancing"
-            type="checkbox"
-            {handleInput}
-        />
       </div>
     </div>
     <div class="invoice-form-dates">
