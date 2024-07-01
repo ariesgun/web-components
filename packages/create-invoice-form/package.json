@@ -1,6 +1,6 @@
 {
   "name": "@ariesgun/create-invoice-form",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "main": "./dist/web-component.umd.cjs",
   "scripts": {
     "dev": "vite dev",
